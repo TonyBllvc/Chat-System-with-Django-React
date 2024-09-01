@@ -70,11 +70,11 @@ const theme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Provider store={store}>
+    // <Provider store={store}>
         <ChakraProvider>
             <ThemeProvider theme={theme}>
                 <App />
             </ThemeProvider>
         </ChakraProvider>
-    </Provider>
+    // </Provider>
 );
