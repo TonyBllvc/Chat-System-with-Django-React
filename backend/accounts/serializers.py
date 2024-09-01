@@ -16,18 +16,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields=['id', 'email', 'first_name', 'last_name', 'password']
         extra_kwargs={'password': {'write_only': True}}
 
-    # def validate(self, attrs):
-    #     email=attrs.get('email', '')
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+    
+        user_exist = get_user_model().objects.filter(email=email).exists()
+        if user_exist:
+            raise serializers.ValidationError({"email": "User with this email already exists."})
         
-    #     user_exist=get_user_model().objects.filter(email=email).exists()
-    #     if user_exist:
-    #         raise serializers.ValidationError("User already exists")
-        
-    #     return attrs
+        if email == 'tony@gmail.com':
+            raise serializers.ValidationError({"email": "This email is barred from registering."})
+    
+        return attrs
 
     def create(self, validated_data):
         email=validated_data['email']
         password=validated_data['password']
+        
         user=get_user_model().objects.create_user(
             email=email,
             password=password,
@@ -41,6 +45,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(max_length=228)
     # id=serializers.UUIDField(read_only=True)
+    first_name=serializers.CharField(max_length=68, read_only=True)
+    last_name=serializers.CharField(max_length=68, read_only=True)
     # confirm_password=serializers.CharField(max_length=68, min_length=6, write_only=True)
     password=serializers.CharField(max_length=68, min_length=6, write_only=True)
     # confirm_password=serializers.CharField(max_length=68, min_length=6, write_only=True)
@@ -48,7 +54,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Users
-        fields = ['email', 'password']
+        fields = ['email', 'password', 'first_name', 'last_name']
 
     def validate(self, data): # data keyword is allowed
         email = data.get('email', '')
@@ -76,5 +82,7 @@ class LoginSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_('Inactive user.'), status.HTTP_401_UNAUTHORIZED)
 
         return {
-            "email": user.email
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name
         }

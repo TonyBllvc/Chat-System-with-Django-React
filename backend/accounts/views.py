@@ -15,7 +15,7 @@ def register_user(request):
 
     if serializer.is_valid():
         serializer.save()
-        return Response({'status': 'success', 'message':serializer.data}, status=201)
+        return Response({'status': 'success', 'message': "Registration successful", "data": serializer.data}, status=201)
     return Response({ 'status': 'error', 'detail':serializer.errors}, status=400)
 
  
@@ -26,10 +26,14 @@ def login_user(request):
     if serializer.is_valid():
         print('hello')
         data=serializer.data
-        token=JWTAuthentication.generate_token(payload=data)
-        print(token)
-        print('okay')
-        return Response({'status': 'success', "message": "Login successful", "token": token, "data": data}, status=status.HTTP_202_ACCEPTED)
+
+        # Generate the token using the serializer's validated data
+        token = JWTAuthentication.generate_token(payload=data)
+        
+        # Remove 'exp' from the data before sending response
+        response_data = {key: value for key, value in data.items() if key != 'exp'}
+
+        return Response({'status': 'success', "message": "Login successful", "token": token, "data": response_data}, status=status.HTTP_202_ACCEPTED)
     return Response({ 'status': 'error', 'detail': serializer.errors}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['DELETE'])
