@@ -15,7 +15,7 @@ class JWTAuthentication(BaseAuthentication):
     @staticmethod
     def generate_token(payload): # For generating tokens
         # expiration = datetime.utcnow() + timedelta(hours=24)
-        expiration = timezone.now() + timedelta(seconds=10) # check this time format out later
+        expiration = timezone.now() + timedelta(minutes=2) # check this time format out later
         payload['exp'] = expiration.timestamp()
         token=jwt.encode(payload=payload, key=settings.SECRET_KEY, algorithm='HS256')
         return token
@@ -42,12 +42,23 @@ class JWTAuthentication(BaseAuthentication):
             return None
         
         try: 
+            # print(f'token: {token}')
             payload=jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            # print(f'payload: {payload}')
             self.verify_token(payload=payload)
 
+            # print(payload['id'])
             user_id=payload['id']
             user_id=uuid.UUID(user_id)
+            # print(user_id)
             user=User.objects.get(id=user_id)
+            # print(f'user: {user}')
+            # user = {
+            #     'id': user.id,
+            #     'first_name': user.first_name,
+            #     'email': user.email,
+            #     'last_name': user.last_name,
+            # }
             return (user, None)
         
         except(InvalidTokenError, ExpiredSignatureError, User.DoesNotExist):

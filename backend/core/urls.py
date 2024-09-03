@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from accounts.views import register_user, login_user, delete_user
+from chat.views import get_user_list
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', register_user, name='register'),
     path('login/', login_user, name='login'),
-    path('delete/<str:id>/', delete_user, name='delete')
+    path('delete/<str:id>/', delete_user, name='delete'),
+    path('api/users/', get_user_list, name='users'),
 ]

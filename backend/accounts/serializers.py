@@ -23,8 +23,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         if user_exist:
             raise serializers.ValidationError({"email": "User with this email already exists."})
         
-        if email == 'tony@gmail.com':
-            raise serializers.ValidationError({"email": "This email is barred from registering."})
+        # if email == 'tony@gmail.com':
+        #     raise serializers.ValidationError({"email": "This email is barred from registering."})
     
         return attrs
 
@@ -54,7 +54,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Users
-        fields = ['email', 'password', 'first_name', 'last_name']
+        fields = ['email', 'password', 'first_name', 'last_name', 'id']
 
     def validate(self, data): # data keyword is allowed
         email = data.get('email', '')
@@ -84,5 +84,6 @@ class LoginSerializer(serializers.ModelSerializer):
         return {
             "email": user.email,
             "first_name": user.first_name,
-            "last_name": user.last_name
+            "last_name": user.last_name,
+            "id": user.id
         }

@@ -66,9 +66,9 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     #     return permission in role_permissions.get(self.role, [])
 
-    def token(self):
-        refresh = RefreshToken.for_user(self)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
+    # def token(self):
+    #     refresh = RefreshToken.for_user(self)
+    #     return {
+    #         'refresh': str(refresh),
+    #         'access': str(refresh.access_token),
+    #     }

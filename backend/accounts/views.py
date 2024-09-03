@@ -32,7 +32,7 @@ def login_user(request):
         
         # Remove 'exp' from the data before sending response
         response_data = {key: value for key, value in data.items() if key != 'exp'}
-
+        # print(token)
         return Response({'status': 'success', "message": "Login successful", "token": token, "data": response_data}, status=status.HTTP_202_ACCEPTED)
     return Response({ 'status': 'error', 'detail': serializer.errors}, status=status.HTTP_401_UNAUTHORIZED)
 
