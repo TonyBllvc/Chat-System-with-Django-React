@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { API_URL } from "../api";
-import { useToast } from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import withoutAuthentication from "../utils/withoutAuthentication";
 
-export default function Register() {
+function Register() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState('')
     // const [success, setError] = useState('')
@@ -14,17 +15,17 @@ export default function Register() {
         password: ''
     });
 
-    const toast = useToast();
-
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
     };
     async function handleSubmit(e) {
         e.preventDefault();
+        setLoading(true);
+        setError('');
 
         try {
-            const response = await fetch(API_URL + 'register/', {
+            const response = await fetch(`${API_URL}register/`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": 'application/json'
@@ -35,21 +36,32 @@ export default function Register() {
             const json = await response.json();
 
             if (response.ok || response.status === 201) {
-                setError(json?.message || 'Registration successful!');
+                toast.success(json?.message || 'Registration successful!');
+                // setFormData({
+                //     email: '',
+                //     first_name: '',
+                //     last_name: '',
+                //     password: ''
+                // });
             } else {
                 const errorDetail = json?.detail || 'An unknown error occurred.';
                 // Handle specific error cases if the response has details.
                 if (typeof errorDetail === 'object') {
                     // Assume `detail` is an object with field-specific errors.
                     const errorMessages = Object.values(errorDetail).flat().join(', ');
+                    toast.error(errorMessages);
                     setError(errorMessages);
                 } else {
                     // Handle general error messages.
                     setError(errorDetail);
+                    toast.error(errorDetail);
                 }
             }
         } catch (error) {
-            setError(error || 'Network error or server is down.');
+            toast.error(error || 'Network error or server is down.');
+            setError('Network error or server is down.');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -69,13 +81,22 @@ export default function Register() {
                     <div className="mt-3">
                         <TextField type="password" variant="outlined" label='Password' value={formData.password} onChange={handleChange} id='password' required/>
                     </div>
-                    <div className="mt-3">
+                    {/* <div className="mt-3">
                         <Button variant="contained" type="submit">
                             Save
                         </Button>
+                    </div> */}
+
+                    <div className="mt-3">
+                        <Button variant="contained" type="submit" disabled={loading}>
+                            {loading ? <CircularProgress size={24} /> : 'Save'}
+                        </Button>
                     </div>
+                    {error && <p className="mt-3 text-red-600 p-4">{error}</p>}
                 </form>
             </div>
         </>
     )
 }
+
+export default withoutAuthentication(Register)

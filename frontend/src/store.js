@@ -1,12 +1,12 @@
 // store.js
 import { configureStore } from '@reduxjs/toolkit';
-// import navHandlerReducer from './slice/navigation/navHandler'
+import userListReducer from './slice/userList'
 // import { apiSlice } from './slice/apiSlice';
 
 const store = configureStore({
   reducer: {
     // [apiSlice.reducerPath]: apiSlice.reducer,
-    // auth: authReducer,
+    userListStatus: userListReducer,
     // product: productReducer,
     // // singleProduct: singleProductReducer,
     // brand: brandReducer,
